@@ -1,3 +1,4 @@
+#Copyright treadrightly
 getColumnNumber = function(outcome)
 {
   if(outcome == "heart attack")
