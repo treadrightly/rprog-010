@@ -3,6 +3,8 @@
 # download and unzip the file
 url = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 destfile = "data.zip"
+outfile = "output.txt"
+
 download.file(url = url, destfile = destfile, mode = "wb", method = "wget")
 unzip(zipfile = destfile)
 
@@ -49,3 +51,16 @@ colnames(y) = c("index","activity")
 # merge subject, X and y to create one merged data set 
 # with descriptive column names for X and activity name for y
 merged_data_set = cbind(subject=subject$V1, X_i, activity=y$activity)
+
+from = 2
+to = dim(merged_data_set)[2] - 1
+
+tidyset = aggregate(merged_data_set[,from:to], by=list(merged_data_set$subject, merged_data_set$activity), FUN=mean)
+tidyset = tidyset[order(tidyset$Group.1, tidyset$Group.2, decreasing=FALSE),]
+colnames(tidyset)[1] = "subject"
+colnames(tidyset)[2] = "activity"
+# this is confusing. i remember reading on the forum that set col.names to FALSE when
+# writing, but the assignment page just says this:
+# Please upload your data set as a txt file created with write.table() using row.name=FALSE 
+# hence keeping the column names
+output = write.table(x=tidyset, file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE)
